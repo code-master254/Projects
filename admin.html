@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Admin Panel - Ofafa VTC</title>
   <style>
-    /* ... your styles (unchanged) ... */
+    /* Add your CSS styles here */
   </style>
 </head>
 <body>
@@ -20,7 +20,6 @@
   <div class="add-form">
     <h3>Add New Entry</h3>
     <form id="addForm">
-      <!-- form fields -->
       <div class="form-group"><label>First Name</label><input name="FirstName" required /></div>
       <div class="form-group"><label>Last Name</label><input name="LastName" required /></div>
       <div class="form-group"><label>Email</label><input name="Email" type="email" required /></div>
@@ -46,7 +45,7 @@
   </table>
 
   <script>
-    const endpoint = 'https://script.google.com/macros/s/AKfycbxGYMypHIsgcY474Oj1n_-OCBbOKsAEuJtoeZ-flDzM9O-IimXWCnEVBwcKHxntvThWvw/exec';
+    const endpoint = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec';
     const token = 'ofafaAdmin@2025!';
 
     const tableHead = document.querySelector("#dataTable thead");
@@ -56,10 +55,11 @@
     async function fetchData(query = "") {
       try {
         const res = await fetch(`${endpoint}?search=${encodeURIComponent(query)}`);
+        if (!res.ok) throw new Error("Failed to fetch data");
         const data = await res.json();
         renderTable(data);
       } catch (err) {
-        alert("Failed to fetch data. Check server or CORS settings.");
+        alert("Error fetching data. Check server or CORS settings.");
       }
     }
 
@@ -79,9 +79,6 @@
         th.textContent = h;
         headRow.appendChild(th);
       });
-      const actionTh = document.createElement("th");
-      actionTh.textContent = "Actions";
-      headRow.appendChild(actionTh);
       tableHead.appendChild(headRow);
 
       data.forEach(entry => {
@@ -91,14 +88,6 @@
           td.textContent = entry[h] || "";
           row.appendChild(td);
         });
-
-        const actionTd = document.createElement("td");
-        const delBtn = document.createElement("button");
-        delBtn.className = "delete-btn";
-        delBtn.textContent = "Delete";
-        delBtn.onclick = () => deleteEntry(entry.Email);
-        actionTd.appendChild(delBtn);
-        row.appendChild(actionTd);
         tableBody.appendChild(row);
       });
     }
@@ -106,8 +95,10 @@
     async function deleteEntry(email) {
       if (!confirm("Are you sure you want to delete this entry?")) return;
 
-      await fetch(`${endpoint}?token=${token}&id=${encodeURIComponent(email)}`, {
-        method: "DELETE"
+      await fetch(endpoint, {
+        method: "POST",
+        body: JSON.stringify({ token, action: "delete", id: email }),
+        headers: { "Content-Type": "application/json" }
       });
 
       fetchData(searchInput.value);
@@ -115,15 +106,16 @@
 
     document.getElementById("addForm").addEventListener("submit", async e => {
       e.preventDefault();
+      
       const formData = new FormData(e.target);
-      const obj = {};
-      formData.forEach((v, k) => obj[k] = v);
-      obj.token = token;
+      const params = new URLSearchParams();
+      formData.forEach((value, key) => params.append(key, value));
+      params.append("token", token);
 
       await fetch(endpoint, {
         method: "POST",
-        body: JSON.stringify(obj),
-        headers: { "Content-Type": "application/json" }
+        body: params,
+        headers: { "Content-Type": "application/x-www-form-urlencoded" }
       });
 
       e.target.reset();
