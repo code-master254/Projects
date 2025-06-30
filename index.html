@@ -64,7 +64,29 @@
     </main>
     <a href="admin.html" class="admin-link">Admin Panel</a>
 
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
 
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyDkc_RtkyjiR500s0r5U5BzvB6URdDTz4M",
+    authDomain: "project-web-853f9.firebaseapp.com",
+    projectId: "project-web-853f9",
+    storageBucket: "project-web-853f9.firebasestorage.app",
+    messagingSenderId: "202901056204",
+    appId: "1:202901056204:web:cb8ecf8f8bfc49d9f1b069",
+    measurementId: "G-C3YKWSW4PT"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
     <!-- Footer -->
     <footer>
         <p>&copy; 2025 Ofafa Vocational Training Centre. All rights reserved.</p>
